@@ -1,31 +1,42 @@
+import argparse
 from geometric_attention.stream import Stream
 from geometric_attention.network import GeometricAttentionNetwork, EnergyPredictor
 from geometric_attention.utils import set_seeds, get_train_test_data
 from geometric_attention.skorch_extensions import FNeuralNet
-
 import numpy as np
-
+import os
 from sklearn.preprocessing import StandardScaler
-
 from skorch.callbacks import Checkpoint
-
 import torch
 
-path = "/Users/thorbenfrank/Documents/data/mol-data/dft/benzene-train.npz"
+# Create the parser
+parser = argparse.ArgumentParser(description='Train GeomAtt on a molecule of your choice.')
+
+# Add the arguments
+parser.add_argument('--input_file',
+                    type=str,
+                    required=True,
+                    help='path to the training data file')
+
+parser.add_argument('--save_path',
+                    type=str,
+                    help='path where the trained model is saved')
+
+args = parser.parse_args()
+
+path = args.input_file
+checkpoint_path = args.save_path if args.save_path else os.path.join("..", "user_trained_model")
 
 set_seeds(0)
-R_train, E_train, F_train, R_valid, E_valid, F_valid = get_train_test_data(path=path, N_train=800, N_test=200)
-energy_scaler = StandardScaler()
+R_train, E_train, F_train, _, _, _ = get_train_test_data(path=path, N_train=1000, N_test=0)
 
+energy_scaler = StandardScaler()
 energies_train = energy_scaler.fit_transform(E_train).astype(np.float32)
 forces_train = F_train / energy_scaler.scale_
-energies_valid = energy_scaler.transform(E_valid).astype(np.float32)
-forces_valid = F_valid / energy_scaler.scale_
-
 atom_types = np.load(path)["z"]
 
-orders = [2, 3, 4]
 
+orders = [2, 3, 4]
 stream_F = 64
 d_min = 0
 d_max = 5
@@ -42,9 +53,10 @@ streams = [Stream(order=k, F=stream_F, d_min=d_min, d_max=d_max, interval=interv
 GeomAtt = GeometricAttentionNetwork(streams=streams, atom_types=None)
 
 # saves the model parameters which gave smallest validation error
-cp = Checkpoint(dirname="checkpoints")
+cp = Checkpoint(dirname=checkpoint_path)
 
 dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 net = FNeuralNet(module=EnergyPredictor,
                  module__geometric_attention_network=GeomAtt,
                  module__atom_types=atom_types,

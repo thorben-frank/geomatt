@@ -39,8 +39,7 @@ class FNeuralNet(NeuralNet):
         energies = []
         forces = []
 
-        #nonlin = self._get_predict_nonlinearity()
-        for e, f in super().forward_iter(X, training=False):
+        for e, f in super().forward_iter(X, training=True):
             energies += [to_numpy(e)]
             forces += [to_numpy(f)]
 
