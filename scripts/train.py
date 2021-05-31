@@ -1,7 +1,7 @@
-from geometric_attention.geometric_attention.stream import Stream
-from geometric_attention.geometric_attention.network import GeometricAttentionNetwork, EnergyPredictor
-from geometric_attention.geometric_attention.utils import set_seeds, get_train_test_data
-from geometric_attention.geometric_attention.skorch_extensions import FNeuralNet
+from geometric_attention.stream import Stream
+from geometric_attention.network import GeometricAttentionNetwork, EnergyPredictor
+from geometric_attention.utils import set_seeds, get_train_test_data
+from geometric_attention.skorch_extensions import FNeuralNet
 
 import numpy as np
 
