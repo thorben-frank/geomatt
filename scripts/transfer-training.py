@@ -9,15 +9,14 @@ from sklearn.preprocessing import StandardScaler
 from skorch.callbacks import Checkpoint
 import torch
 
-
 # Create the parser
 parser = argparse.ArgumentParser(description='Train GeomAtt on a molecule of your choice.')
 
 # Add the arguments
 # Arguments for file and save paths
-parser.add_argument('--model_path', type=str, required=True, help='path where the trained model has been saved')
 parser.add_argument('--train_file', type=str, required=True, help='path to the training data file')
-parser.add_argument('--evaluation_file', type=str, required=True, help='path to the test file')
+parser.add_argument('--pretrained_path', type=str, required=True, help='path where the pretrained model is saved')
+parser.add_argument('--save_path', type=str, help='path where the trained model will be saved')
 
 # Arguments that determine the model
 parser.add_argument('--Nl', type=int, default=3, help='Number of layers per stream. Currently only the same number of layers across streams is allowed.')
@@ -25,8 +24,8 @@ parser.add_argument('--Fi', type=int, default=128, help='Inner product dimension
 parser.add_argument('--Fv', type=int, default=128, help='Atom embedding dimension')
 parser.add_argument('--orders', type=int, nargs='+', help='The orders k of the streams')
 parser.set_defaults(orders=[2, 3, 4])
-parser.add_argument('--mode', type=str, help='Set the mode to evaluation or training')
-parser.set_defaults(mode="evaluation")
+parser.add_argument('--mode', type=str, help='Set the mode to eval or training')
+parser.set_defaults(mode="training")
 
 # Arguments that determine the discretization
 parser.add_argument('--dmin', type=float, default=0., help='Lower bound of the integral')
@@ -35,18 +34,19 @@ parser.add_argument('--gamma', type=float, default=20., help='RBF width paramete
 parser.add_argument('--interval', type=float, default=.05, help='Spacing between discretization points')
 
 # Arguments that determine the training parameters
+parser.add_argument('--N_epochs', type=int, default=2000, help="Number of training epochs")
 parser.add_argument('--batch_size', type=int, default=10, help="Batch size")
+parser.add_argument('--rho', type=float, default=.01, help="Trade off parameter between energy and force loss")
 parser.add_argument('--forces', dest='forces', action='store_true')
 parser.add_argument('--no_forces', dest='forces', action='store_false')
 parser.set_defaults(forces=True)
-parser.add_argument('--N_eval', type=int, default=-1, required=False, help='Number of points to use for evaluation')
 
 args = parser.parse_args()
 
-# Read the path and file parameters
-train_path = args.train_file
-eval_path = args.evaluation_file
-model_path = args.model_path
+# Read arguments for file and save paths
+train_file_path = args.train_file
+checkpoint_path = args.save_path if args.save_path else os.path.join("..", "user_trained_model")
+pretrained_path = args.pretrained_path
 
 # Read the model hyper parameters
 Nl = args.Nl  # No. of streams
@@ -61,49 +61,61 @@ dmax = args.dmax
 gamma = args.gamma
 interval = args.interval
 
-# Read the evaluation parameters
+# Read the training parameters
+N_epochs = args.N_epochs
 batch_size = args.batch_size
 with_forces = args.forces
-N_eval = args.N_eval
+rho = args.rho if args.forces else 1.
 
 set_seeds(0)
 
-# Use the training data to get the scaler for the data
-R_train, E_train, F_train, _, _, _ = get_train_test_data(path=train_path, N_train=1000, N_test=0)
+# Read the data of the transfer molecule
+R_train, E_train, F_train, _, _, _ = get_train_test_data(path=train_file_path, N_train=1000, N_test=0)
+
 energy_scaler = StandardScaler()
-_ = energy_scaler.fit(E_train)
+energies_train = energy_scaler.fit_transform(E_train).astype(np.float32)
+forces_train = F_train / energy_scaler.scale_
+atom_types = np.load(train_file_path)["z"]
 
-# Load the data for evaluation
-N_eval = N_eval if N_eval > 0 else np.load(eval_path)["E"].shape[0]
-_, _, _, R_test, E_test, F_test = get_train_test_data(path=eval_path, N_train=0, N_test=N_eval)
-X_dict_test = {'coordinates': R_test}
-atom_types = np.load(eval_path)["z"]
+X_dict_train = {'coordinates': R_train}
+Y_dict_train = {'E': energies_train.astype(np.float32), 'F': forces_train.astype(np.float32)}
 
-# Construct the model for the predictions
+# Construct the model
 streams = [Stream(order=k, F=int(Fi/(2**(k-2))), d_min=dmin, d_max=dmax, interval=interval, gamma=gamma, F_v=Fv, N_L=Nl, mode=mode)
            for k in orders]
+
 GeomAtt = GeometricAttentionNetwork(streams=streams, atom_types=None)
 
-# Use the trained model to predict
-cp_pred = Checkpoint(dirname=model_path)
+# saves the model parameters which gave smallest validation error
+cp = Checkpoint(dirname=checkpoint_path)
 
 dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-net_pred = FNeuralNet(module=EnergyPredictor,
-                      module__geometric_attention_network=GeomAtt,
-                      module__atom_types=atom_types,
-                      module__with_forces=with_forces,
-                      module__F=Fv,
-                      batch_size=batch_size,
-                      criterion=torch.nn.MSELoss,
-                      device=dev,
-                      )
+pretrained_net = FNeuralNet(module=EnergyPredictor,
+                            module__geometric_attention_network=GeomAtt,
+                            module__atom_types=atom_types,
+                            module__with_forces=with_forces,
+                            module__F=Fv,
+                            optimizer=torch.optim.Adam,
+                            optimizer__lr=1e-4,
+                            criterion=torch.nn.MSELoss,
+                            max_epochs=N_epochs,
+                            beta=rho,
+                            iterator_train__batch_size=batch_size,
+                            iterator_valid__batch_size=batch_size,
+                            iterator_train__shuffle=True,
+                            callbacks=[cp],
+                            device=dev,
+                            )
 
-net_pred.initialize()
-net_pred.load_params(checkpoint=cp_pred)
-predictions = net_pred.predict(X_dict_test)
-energy_pred = energy_scaler.inverse_transform(predictions["E"])
-force_pred = energy_scaler.scale_ * predictions["F"]
+pretrained_net.load_params(checkpoint=pretrained_path)
 
-print("Model Energy MAE = {}".format(np.mean(np.abs(energy_pred.reshape(-1)-E_test.reshape(-1)))))
-if len(force_pred) != 0:
-    print("Model Force MAE = {}".format(np.mean(np.abs(force_pred.reshape(-1) - F_test.reshape(-1)))))
+# Freeze all parameters except for the last layers
+for param in pretrained_net.module_.parameters():
+    param.requires_grad = False
+for param in pretrained_net.module_.energy_extractor.parameters():
+    param.requires_grad = True
+
+# Fit the model
+pretrained_net.partial_fit(X_dict_train, Y_dict_train)
+
+

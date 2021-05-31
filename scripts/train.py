@@ -15,7 +15,7 @@ parser = argparse.ArgumentParser(description='Train GeomAtt on a molecule of you
 # Add the arguments
 # Arguments for file and save paths
 parser.add_argument('--train_file', type=str, required=True, help='path to the training data file')
-parser.add_argument('--save_path', type=str, help='path where the trained model is saved')
+parser.add_argument('--save_path', type=str, help='path where the trained model will be saved')
 
 # Arguments that determine the model
 parser.add_argument('--Nl', type=int, default=3, help='Number of layers per stream. Currently only the same number of layers across streams is allowed.')
@@ -79,7 +79,7 @@ X_dict_train = {'coordinates': R_train}
 Y_dict_train = {'E': energies_train.astype(np.float32), 'F': forces_train.astype(np.float32)}
 
 # Construct the model
-streams = [Stream(order=k, F=Fi, d_min=dmin, d_max=dmax, interval=interval, gamma=gamma, F_v=Fv, N_L=Nl, mode=mode)
+streams = [Stream(order=k, F=int(Fi/(2**(k-2))), d_min=dmin, d_max=dmax, interval=interval, gamma=gamma, F_v=Fv, N_L=Nl, mode=mode)
            for k in orders]
 
 GeomAtt = GeometricAttentionNetwork(streams=streams, atom_types=None)

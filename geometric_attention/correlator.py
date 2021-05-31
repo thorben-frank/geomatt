@@ -3,8 +3,6 @@ from abc import ABC, abstractmethod
 import torch
 from torch import nn
 
-from .utils import SSP
-
 
 class CorrelatorK2(nn.Module, ABC):
     def __init__(self, F, D, interval, shared=False, bias=True):
@@ -16,8 +14,6 @@ class CorrelatorK2(nn.Module, ABC):
 
         self.Q_0 = nn.Linear(in_features=D, out_features=F, bias=bias)
         self.Q = nn.Linear(in_features=D, out_features=F, bias=bias)
-
-        self.ssp = SSP()
 
     def forward(self, rbf_0, rbf_d):
         q_0 = self.Q_0(rbf_0)
@@ -35,7 +31,6 @@ class CorrelatorK3(nn.Module, ABC):
 
         self.interval = interval
         self.shared = shared
-        self.ssp = SSP()
 
         if not shared:
             self.Q_0 = nn.Linear(in_features=D, out_features=F, bias=bias)
@@ -84,7 +79,6 @@ class CorrelatorK4(nn.Module, ABC):
 
         self.interval = interval
         self.shared = shared
-        self.ssp = SSP()
 
         if not shared:
             self.Q_0 = nn.Linear(in_features=D, out_features=F, bias=bias)
