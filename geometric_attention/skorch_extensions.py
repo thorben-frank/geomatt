@@ -1,8 +1,5 @@
 import numpy as np
-
 from skorch import NeuralNet
-
-from skorch.dataset import unpack_data
 from skorch.utils import to_numpy
 
 
