@@ -21,7 +21,7 @@ parser.add_argument('--pretrained_path', type=str, required=True, help='path whe
 parser.add_argument('--save_path', type=str, required=True, help='path where the trained model will be saved')
 
 # Arguments that determine the training parameters
-parser.add_argument('--N_epochs', type=int, default=2000, help="Number of training epochs")
+parser.add_argument('--N_epochs', type=int, default=1000, help="Number of training epochs")
 parser.add_argument('--batch_size', type=int, default=10, help="Batch size")
 parser.add_argument('--rho', type=float, default=.01, help="Trade off parameter between energy and force loss")
 parser.add_argument('--forces', dest='forces', action='store_true', help="Training with forces (Default)")
