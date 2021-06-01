@@ -8,3 +8,5 @@ DNA/
 user_trained_model/
 user_trained_transfer_model/
 *.egg-info/
+*.pdf
+figures/
