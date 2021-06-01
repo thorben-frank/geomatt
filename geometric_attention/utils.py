@@ -1,7 +1,8 @@
+import errno
 import itertools as it
-
+import json
 import numpy as np
-
+import os
 import scipy.linalg as LA
 
 import torch
@@ -111,3 +112,12 @@ def adjacency(coordinates):
     adj = torch.where(pair_distances != 0, pair_distances, torch.zeros_like(pair_distances))
     adj = adj.view(B, N_v, N_v)
     return adj
+
+
+def read_json_file(file_path):
+    if not os.path.isfile(file_path):
+        raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), file_path)
+    data = None
+    with open(file_path, 'r') as f:
+        data = json.load(f)
+    return data

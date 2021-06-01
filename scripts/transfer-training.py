@@ -1,10 +1,12 @@
 import argparse
 from geometric_attention.stream import Stream
 from geometric_attention.network import GeometricAttentionNetwork, EnergyPredictor
-from geometric_attention.utils import set_seeds, get_train_test_data
+from geometric_attention.utils import set_seeds, get_train_test_data, read_json_file
 from geometric_attention.skorch_extensions import FNeuralNet
+import json
 import numpy as np
 import os
+from pathlib import Path
 from sklearn.preprocessing import StandardScaler
 from skorch.callbacks import Checkpoint
 import torch
@@ -16,56 +18,52 @@ parser = argparse.ArgumentParser(description='Train GeomAtt on a molecule of you
 # Arguments for file and save paths
 parser.add_argument('--train_file', type=str, required=True, help='path to the training data file')
 parser.add_argument('--pretrained_path', type=str, required=True, help='path where the pretrained model is saved')
-parser.add_argument('--save_path', type=str, help='path where the trained model will be saved')
-
-# Arguments that determine the model
-parser.add_argument('--Nl', type=int, default=3, help='Number of layers per stream. Currently only the same number of layers across streams is allowed.')
-parser.add_argument('--Fi', type=int, default=128, help='Inner product dimension')
-parser.add_argument('--Fv', type=int, default=128, help='Atom embedding dimension')
-parser.add_argument('--orders', type=int, nargs='+', help='The orders k of the streams')
-parser.set_defaults(orders=[2, 3, 4])
-parser.add_argument('--mode', type=str, help='Set the mode to eval or training')
-parser.set_defaults(mode="training")
-
-# Arguments that determine the discretization
-parser.add_argument('--dmin', type=float, default=0., help='Lower bound of the integral')
-parser.add_argument('--dmax', type=float, default=5., help='Upper bound of the integral')
-parser.add_argument('--gamma', type=float, default=20., help='RBF width parameter')
-parser.add_argument('--interval', type=float, default=.05, help='Spacing between discretization points')
+parser.add_argument('--save_path', type=str, required=True, help='path where the trained model will be saved')
 
 # Arguments that determine the training parameters
 parser.add_argument('--N_epochs', type=int, default=2000, help="Number of training epochs")
 parser.add_argument('--batch_size', type=int, default=10, help="Batch size")
 parser.add_argument('--rho', type=float, default=.01, help="Trade off parameter between energy and force loss")
-parser.add_argument('--forces', dest='forces', action='store_true', help="Training/Evaluation with forces (Default)")
-parser.add_argument('--no_forces', dest='forces', action='store_false', help="Training/Evaluation without forces")
+parser.add_argument('--forces', dest='forces', action='store_true', help="Training with forces (Default)")
+parser.add_argument('--no_forces', dest='forces', action='store_false', help="Training without forces")
 parser.set_defaults(forces=True)
 
 args = parser.parse_args()
 
 # Read arguments for file and save paths
 train_file_path = args.train_file
-checkpoint_path = args.save_path if args.save_path else os.path.join("..", "user_trained_transfer_model")
+checkpoint_path = args.save_path
 pretrained_path = args.pretrained_path
 
+pretrained_hyperparameter_path = os.path.join(pretrained_path, "hyperparameters.json")
+h = read_json_file(pretrained_hyperparameter_path)
+
 # Read the model hyper parameters
-Nl = args.Nl  # No. of streams
-Fi = args.Fi  # Inner product dimension
-Fv = args.Fv  # Atom embedding dimension
-orders = args.orders  # Orders of the streams
-mode = args.mode  # Mode of the forward passes
+Nl = h["Nl"]  # No. of streams
+Fi = h["Fi"]  # Inner product dimension
+Fv = h["Fv"]  # Atom embedding dimension
+orders = h["orders"]  # Orders of the streams
 
 # Read the discretization parameters
-dmin = args.dmin
-dmax = args.dmax
-gamma = args.gamma
-interval = args.interval
+dmin = h["dmin"]
+dmax = h["dmax"]
+gamma = h["gamma"]
+interval = h["interval"]
 
 # Read the training parameters
 N_epochs = args.N_epochs
+h["N_epochs"] = N_epochs
 batch_size = args.batch_size
+h["batch_size"] = batch_size
 with_forces = args.forces
+h["forces"] = with_forces
 rho = args.rho if args.forces else 1.
+h["rho"] = rho
+
+Path(checkpoint_path).mkdir(parents=True, exist_ok=True)
+file_path = os.path.join(checkpoint_path, "hyperparameters.json")
+with open(file_path, 'w') as f:
+    json.dump(h, f)
 
 set_seeds(0)
 
@@ -81,7 +79,7 @@ X_dict_train = {'coordinates': R_train}
 Y_dict_train = {'E': energies_train.astype(np.float32), 'F': forces_train.astype(np.float32)}
 
 # Construct the model
-streams = [Stream(order=k, F=int(Fi/(2**(k-2))), d_min=dmin, d_max=dmax, interval=interval, gamma=gamma, F_v=Fv, N_L=Nl, mode=mode)
+streams = [Stream(order=k, F=int(Fi/(2**(k-2))), d_min=dmin, d_max=dmax, interval=interval, gamma=gamma, F_v=Fv, N_L=Nl, mode="training")
            for k in orders]
 
 GeomAtt = GeometricAttentionNetwork(streams=streams, atom_types=None)
