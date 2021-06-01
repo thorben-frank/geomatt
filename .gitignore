@@ -10,5 +10,3 @@ user_trained_transfer_model/
 *.egg-info/
 *.pdf
 figures/
-datasets/
-pretrained_models/
