@@ -44,8 +44,8 @@ parser.add_argument('--N_eval', type=int, default=-1, required=False, help='Numb
 args = parser.parse_args()
 
 # Read the path and file parameters
-train_path = args.train_file
-eval_path = args.evaluation_file
+train_file_path = args.train_file
+eval_file_path = args.evaluation_file
 model_path = args.model_path
 
 # Read the model hyper parameters
@@ -69,15 +69,15 @@ N_eval = args.N_eval
 set_seeds(0)
 
 # Use the training data to get the scaler for the data
-R_train, E_train, F_train, _, _, _ = get_train_test_data(path=train_path, N_train=1000, N_test=0)
+R_train, E_train, F_train, _, _, _ = get_train_test_data(path=train_file_path, N_train=1000, N_test=0)
 energy_scaler = StandardScaler()
 _ = energy_scaler.fit(E_train)
 
 # Load the data for evaluation
-N_eval = N_eval if N_eval > 0 else np.load(eval_path)["E"].shape[0]
-_, _, _, R_test, E_test, F_test = get_train_test_data(path=eval_path, N_train=0, N_test=N_eval)
+N_eval = N_eval if N_eval > 0 else np.load(eval_file_path)["E"].shape[0]
+_, _, _, R_test, E_test, F_test = get_train_test_data(path=eval_file_path, N_train=0, N_test=N_eval)
 X_dict_test = {'coordinates': R_test}
-atom_types = np.load(eval_path)["z"]
+atom_types = np.load(eval_file_path)["z"]
 
 # Construct the model for the predictions
 streams = [Stream(order=k, F=int(Fi/(2**(k-2))), d_min=dmin, d_max=dmax, interval=interval, gamma=gamma, F_v=Fv, N_L=Nl, mode=mode)

@@ -6,3 +6,4 @@ DNA/
 *.pt
 *.json
 user_trained_model/
+user_trained_transfer_model/

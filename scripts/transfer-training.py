@@ -37,15 +37,15 @@ parser.add_argument('--interval', type=float, default=.05, help='Spacing between
 parser.add_argument('--N_epochs', type=int, default=2000, help="Number of training epochs")
 parser.add_argument('--batch_size', type=int, default=10, help="Batch size")
 parser.add_argument('--rho', type=float, default=.01, help="Trade off parameter between energy and force loss")
-parser.add_argument('--forces', dest='forces', action='store_true')
-parser.add_argument('--no_forces', dest='forces', action='store_false')
+parser.add_argument('--forces', dest='forces', action='store_true', help="Training/Evaluation with forces (Default)")
+parser.add_argument('--no_forces', dest='forces', action='store_false', help="Training/Evaluation without forces")
 parser.set_defaults(forces=True)
 
 args = parser.parse_args()
 
 # Read arguments for file and save paths
 train_file_path = args.train_file
-checkpoint_path = args.save_path if args.save_path else os.path.join("..", "user_trained_model")
+checkpoint_path = args.save_path if args.save_path else os.path.join("..", "user_trained_transfer_model")
 pretrained_path = args.pretrained_path
 
 # Read the model hyper parameters
@@ -107,7 +107,7 @@ pretrained_net = FNeuralNet(module=EnergyPredictor,
                             device=dev,
                             )
 
-pretrained_net.load_params(checkpoint=pretrained_path)
+pretrained_net.load_params(checkpoint=Checkpoint(dirname=pretrained_path))
 
 # Freeze all parameters except for the last layers
 for param in pretrained_net.module_.parameters():
