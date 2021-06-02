@@ -23,7 +23,7 @@ parser.add_argument('--mode', type=str, required=True,
                     help='Pass the MP step to use: Either standard (default) or geometric_attention')
 
 parser.add_argument('--order', type=int, default=2, help='The order k to use when running in mode geometric_attention')
-parser.add_argument('--N_epochs', type=int, default=200, help='Number of training epochs')
+parser.add_argument('--N_epochs', type=int, default=250, help='Number of training epochs (default=250)')
 
 args = parser.parse_args()
 

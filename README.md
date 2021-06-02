@@ -234,6 +234,57 @@ If we want to transfer our learned model to a different molecule we use the `tra
 The models can be evaluated and attention matrices plotted using the already described scripts `eval.py` and 
 `attention-plot.py`. 
 
+## Geometric Classification
+So far we have focussed on reproducing the main results from the paper. We now give instructions on how to 
+reproduce the figures from the **Geometric Classification** section in the paper. As the training is cheap we do not 
+provide pretrained models. 
+
+Typing
+
+`python3 geometric-classifiers.py --help`
+
+displays the parameters that can be passed to the script. In the paper we have to cases:
+
+A) Two shapes can only be distinguished by the angles.
+
+B) Two shapes can only be distinguished by the dihedral angles.
+
+Each of these cases has a separate file in the `datasets` folder. 
+
+The general usage of the `geometric-classifiers.py` is the following
+
+`python3 geometric-classifiers.py --train_file <file-path> --figure_folder <directory>` 
+
+which will perform classification of the shapes stored in `--train_file` with a standard message passing step and plots
+the final embeddings into the `--figure_folder` directory. Running the command
+
+`python3 geometric-classifiers.py --train_file ../datasets/shapes-A.npz --figure_folder ../figures/shapes-A --N_eval=75`
+
+will perform a geometric classification using the standard aggregation step on the shapes A<sub>1</sub> and 
+A<sub>2</sub> for 75 epochs. As it can be seen on the resulting accuracy as well as on the figure 
+which lies in the directory `../figures/shapes-A` a standard MP step fails to distinguish the shapes. The usage of the 
+geometric attention operation can be set by appropriately setting the `--mode` where the order is specified by the 
+`--order` flag. Running the command 
+
+`python3 geometric-classifiers.py --train_file ../datasets/shapes-A.npz --figure_folder ../figures/shapes-A --mode geometric_attention --order=3 --N_eval=75`
+
+will show that the geometric attention operator of order k=3 can distinguish the shapes. This can be seen on the plot
+as well as on the achieved accuracy on the test set which is plotted in the end.
+
+As before one can also run a shell script `figure-goeometric-classification.sh` from **within the script directory** by
+running the command
+
+`source ./figure-geometric-classification.sh`
+
+This scripts successively trains the models, outputs the achieved accuracies and saves the 
+embedding plots into the directories 
+`detect-the-interactions-that-matter-in-matter-geometric-attention-for-many-body-systems/shapes/shapes-A` 
+and `detect-the-interactions-that-matter-in-matter-geometric-attention-for-many-body-systems/shapes/shapes-B`, 
+respectively.
+
+
+
+
 
 
 
