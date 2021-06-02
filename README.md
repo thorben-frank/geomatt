@@ -89,7 +89,7 @@ outputs the mean absolute error (MAE) for energy and forces.
 ### Transfer Learning
 Type 
 
-`python3 transfer-learning.py --help`
+`python3 transfer-training.py --help`
 
 for full details on parameters that can be passed to the transfer learning script. The transfer learning script handles 
 two things for you. If one runs the command
@@ -128,11 +128,11 @@ entry in the tables and each figure.
 As we have seen before a model can be evaluated using the `eval.py` script. For a given `<molecule-name>` this corresponds to
 run the command 
 
-`python3 eval.py --model_path ../pretrained_models/<molecule-name> --evaluation_file ../datasets/<molecule-name>-test.npz --train_file ..datasets/<molecule-name>-train.npz`
+`python3 eval.py --model_path ../pretrained_models/<molecule-name> --evaluation_file ../datasets/<molecule-name>-test.npz --train_file ../datasets/<molecule-name>-train.npz`
 
 E.g. for aspirin one should run
 
-`python3 eval.py --model_path ../pretrained_models/aspirin --evaluation_file ../datasets/aspirin-test.npz --train_file ..datasets/aspirin-train.npz --N_eval=250`
+`python3 eval.py --model_path ../pretrained_models/aspirin --evaluation_file ../datasets/aspirin-test.npz --train_file ../datasets/aspirin-train.npz --N_eval=250`
 
 which evaluates the aspirin model on 250 test points. In order to get the exact same values as in the table reported in the 
 paper and below just remove the `--N_eval` flag. Other molecules work similar.
@@ -141,14 +141,14 @@ paper and below just remove the `--N_eval` flag. Other molecules work similar.
 The entries in the transfer learning table can be reproduced in a similar fashion where we just reset the paths. In general
 the command for this looks the following
 
-`python3 eval.py --model_path ../pretrained_models/<base-molecule>2<target-molecule> --evaluation_file ../datasets/<target-molecule>-test.npz --train_file ..datasets/<target-molecule>-train.npz`
+`python3 eval.py --model_path ../pretrained_models/<base-molecule>2<target-molecule> --evaluation_file ../datasets/<target-molecule>-test.npz --train_file ../datasets/<target-molecule>-train.npz`
 
 The placeholder `<base_molecule>` describes the molecule on which the network has been originally trained and 
 `<target-molecule>` is a placeholder for the molecule to which the base molecule network has been transferred.
 
 E.g. for aspirin to benzene one should run
 
-`python3 eval.py --model_path ../pretrained_models/aspirin2benzene --evaluation_file ../datasets/benzene-test.npz --train_file ..datasets/benzene-train.npz --N_eval=250`
+`python3 eval.py --model_path ../pretrained_models/aspirin2benzene --evaluation_file ../datasets/benzene-test.npz --train_file ../datasets/benzene-train.npz --N_eval=250`
 
 which evaluates the model for aspirin transfered to benzene on 250 test points. In order to get the exact same values as in the table reported in the 
 paper and below just remove the `--N_eval` flag. Other molecules work similar.
