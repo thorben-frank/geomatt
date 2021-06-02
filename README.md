@@ -6,13 +6,23 @@ Clone the code to your local machine using
 `git clone https://github.com/thorben-frank/detect-the-interactions-that-matter-in-matter-geometric-attention-for-many-body-systems.git`
 
 
-All following setup commands are intended to be executed in in the folder in which the 
-`setup.py` file lies. 
-### Code
-To install the package geometric attention as well as
-all dependencies which are needed in the following run the command:
+Afterwards change into the directory `detect-the-interactions-that-matter-in-matter-geometric-attention-for-many-body-systems`.
 
-`pip install .`
+### Code
+
+#### Create a Virtual Environment
+Lets start by setting up a new virtual environment. Therefore, type
+
+`python3 -m venv venv_geometric_attention`
+
+which will setup a new virtual environment with the name `venv_geometric_attention`. Next activate the 
+virtual environment by using the command 
+
+`source venv_geometric_attention/bin/activate`
+
+To install the package geometric attention and all dependencies which are needed in the following run the command
+
+`pip3 install .`
 ### Getting the Data
 In the paper the MD17 data sets and a DNA data set are used. They can be downloaded [here](https://drive.google.com/drive/folders/1GmyFUGzHfw2OK2fpv_3AH285xpUZk8JA?usp=sharing).
 After unpacking the data please put the folder `datasets` into the `detect-the-interactions-that-matter-in-matter-attention-for-many-body-systems` folder.
@@ -38,18 +48,18 @@ These scripts give you the possibility to set all paths per hand.
 ### Training a Model
 Go into the script folder and run the command
 
-`python train.py --help`
+`python3 train.py --help`
 
 It will display explanation on the parameters that can be passed to the model. To train a *GeomAtt* network for some molecule is given as
 
-`python train.py --train_file <file-path> --save_path <directory>`
+`python3 train.py --train_file <file-path> --save_path <directory>`
 
 The parameter which specifies the path to the training file and a directory where the model should be saved are mandatory. When no further 
 parameters are passed to the script it will run with the default parameters which are listed in the table in the main paper
 in the appendix. For example training a *GeomAtt* network for `N_epochs=50` epochs on benzene with default parameters, correlation orders `k=2` and `k=3` 
 and inner product space dimension `Fi = 64` can be achieved by the command
 
-`python train.py --train_file ../datasets/benzene-train.npz --save_path ../user_trained_models/geomatt-benzene --orders 2 3 --Fi=64 --N_epochs=50`
+`python3 train.py --train_file ../datasets/benzene-train.npz --save_path ../user_trained_models/geomatt-benzene --orders 2 3 --Fi=64 --N_epochs=50`
 
 When running the training script from above the directory `../user_trained_models/geomatt-benzene` is created from where the script is run. 
 For the purpose of illustration relative paths are used here but we strongly recommend to use absolute paths instead, as they
@@ -59,18 +69,18 @@ hyperparameters and the network parameters with the lowest validation error.
 ### Evaluate a Model
 Type 
 
-`python eval.py --help`
+`python3 eval.py --help`
 
 for full details on parameters that can be passed to the evaluation script. 
 To validate a trained model on the test data use the command
 
-`python eval.py --model_path <directory> --evaluation_file <file-path> --train_file <file-path>`
+`python3 eval.py --model_path <directory> --evaluation_file <file-path> --train_file <file-path>`
 
 The parameter `--model_path` specifies the location where the model has been saved and the `--evaluation_file` sets the location of the 
 evaluation file. Additionally, one has to pass the file on which the model has been trained to `--train_file` in order to scale the output of the network
 properly. We can use this to evaluate our trained model from above on `N_eval = 100` test points
 
-`python eval.py --model_path ../user_trained_models/geomatt-benzene --evaluation_file ../datasets/benzene-test.npz --train_file ../datasets/benzene-train.npz --N_eval=100`
+`python3 eval.py --model_path ../user_trained_models/geomatt-benzene --evaluation_file ../datasets/benzene-test.npz --train_file ../datasets/benzene-train.npz --N_eval=100`
  
 When passing no argument for `N_eval = 100` all test points are used for evaluation. As this are up to 1M per molecule, 
 the parameter `N_eval` can be used if one is interested in a rough estimate for the model performance. The script 
@@ -79,12 +89,12 @@ outputs the mean absolute error (MAE) for energy and forces.
 ### Transfer Learning
 Type 
 
-`python transfer-learning.py --help`
+`python3 transfer-learning.py --help`
 
 for full details on parameters that can be passed to the transfer learning script. The transfer learning script handles 
 two things for you. If one runs the command
 
-`python transfer-training.py --train_file <file-path> --pretrained_path <directory> --save_path <directory>`
+`python3 transfer-training.py --train_file <file-path> --pretrained_path <directory> --save_path <directory>`
 
 the `transfer-training.py` script does the following things for you: It loads a pretrained model that has been trained 
 on some base molecule from `--pretrained_path`. It freezes all parameters apart from the last layer and retrains only 
@@ -93,7 +103,7 @@ transferred model is then saved to `--save_path`.
 
 If we want to transfer for example our trained benzene model to naphthalene we can do this by using the command
 
-`python transfer-training.py --train_file ../datasets/naphthalene-train.npz --pretrained_path ../user_trained_models/geomatt-benzene --save_path ../user_transferred_models/benzene2naphthalene --N_epochs=50`  
+`python3 transfer-training.py --train_file ../datasets/naphthalene-train.npz --pretrained_path ../user_trained_models/geomatt-benzene --save_path ../user_transferred_models/benzene2naphthalene --N_epochs=50`  
 
 In order to avoid confusion with the evaluation script we want to remark that the `--train_file` flag from above 
 corresponds to the file which is used to retrain the final layers.
@@ -101,7 +111,9 @@ corresponds to the file which is used to retrain the final layers.
 We can now evaluate the transferred model by using again the evaluation script in the fashion from before but with 
 adjusted paths
 
-`python eval.py --model_path ../user_transferred_models/benzene2naphthalene --evaluation_file ../datasets/naphthalene-test.npz --train_file ../datasets/naphthalene-train.npz --N_eval=100`
+`python3 eval.py --model_path ../user_transferred_models/benzene2naphthalene --evaluation_file ../datasets/naphthalene-test.npz --train_file ../datasets/naphthalene-train.npz --N_eval=100`
+## Results
+Here recap the results and link to the appropriate lines in the MD file.
 
 ## Reproduce the Paper Results using Pretrained Models
 After we have seen the general syntax for the python scripts we now proceed to give a guide on reproducing the results 
@@ -116,11 +128,11 @@ entry in the tables and each figure.
 As we have seen before a model can be evaluated using the `eval.py` script. For a given `<molecule-name>` this corresponds to
 run the command 
 
-`python eval.py --model_path ../pretrained_models/<molecule-name> --evaluation_file ../datasets/<molecule-name>-test.npz --train_file ..datasets/<molecule-name>-train.npz`
+`python3 eval.py --model_path ../pretrained_models/<molecule-name> --evaluation_file ../datasets/<molecule-name>-test.npz --train_file ..datasets/<molecule-name>-train.npz`
 
 E.g. for aspirin one should run
 
-`python eval.py --model_path ../pretrained_models/aspirin --evaluation_file ../datasets/aspirin-test.npz --train_file ..datasets/aspirin-train.npz --N_eval=250`
+`python3 eval.py --model_path ../pretrained_models/aspirin --evaluation_file ../datasets/aspirin-test.npz --train_file ..datasets/aspirin-train.npz --N_eval=250`
 
 which evaluates the aspirin model on 250 test points. In order to get the exact same values as in the table reported in the 
 paper and below just remove the `--N_eval` flag. Other molecules work similar.
@@ -129,14 +141,14 @@ paper and below just remove the `--N_eval` flag. Other molecules work similar.
 The entries in the transfer learning table can be reproduced in a similar fashion where we just reset the paths. In general
 the command for this looks the following
 
-`python eval.py --model_path ../pretrained_models/<base-molecule>2<target-molecule> --evaluation_file ../datasets/<target-molecule>-test.npz --train_file ..datasets/<target-molecule>-train.npz`
+`python3 eval.py --model_path ../pretrained_models/<base-molecule>2<target-molecule> --evaluation_file ../datasets/<target-molecule>-test.npz --train_file ..datasets/<target-molecule>-train.npz`
 
 The placeholder `<base_molecule>` describes the molecule on which the network has been originally trained and 
 `<target-molecule>` is a placeholder for the molecule to which the base molecule network has been transferred.
 
 E.g. for aspirin to benzene one should run
 
-`python eval.py --model_path ../pretrained_models/aspirin2benzene --evaluation_file ../datasets/benzene-test.npz --train_file ..datasets/benzene-train.npz --N_eval=250`
+`python3 eval.py --model_path ../pretrained_models/aspirin2benzene --evaluation_file ../datasets/benzene-test.npz --train_file ..datasets/benzene-train.npz --N_eval=250`
 
 which evaluates the model for aspirin transfered to benzene on 250 test points. In order to get the exact same values as in the table reported in the 
 paper and below just remove the `--N_eval` flag. Other molecules work similar.
@@ -145,11 +157,11 @@ paper and below just remove the `--N_eval` flag. Other molecules work similar.
 The plots for the attention matrices can be generated by using the script `attention-plot.py` for which details can be 
 displayed by typing
 
-`python attention-plot.py --help`
+`python3 attention-plot.py --help`
 
 The general command to create a figure is then given as 
 
-`python attention-plot.py --model_path <directory> --evaluation_file <file-path> --figure_folder <directory> --L=<int> --k=<int> --i=<int> --N_eval=<int>`
+`python3 attention-plot.py --model_path <directory> --evaluation_file <file-path> --figure_folder <directory> --L=<int> --k=<int> --i=<int> --N_eval=<int>`
 
 The flags `--L` `--k` and `--i ` determine the layer number, the order of the stream and the test point index 
 which is used the generate the attention matrix plot. Note that there is an additional flag `--N_eval` which determines 
@@ -158,19 +170,19 @@ the total number of evaluation points used (defaults to 10). Thus, `--i` must no
 
 For figure 5 upper part run
 
-`python attention-plot.py --model_path ../pretrained_models/aspirin --evaluation_file ../datasets/aspirin-test.npz --figure_folder ../figures/figure5_upper --L=1 --k=2 --i=1 --N_eval=1`
+`python3 attention-plot.py --model_path ../pretrained_models/aspirin --evaluation_file ../datasets/aspirin-test.npz --figure_folder ../figures/figure5_upper --L=1 --k=2 --i=1 --N_eval=1`
 
 and for the lower part
 
-`python attention-plot.py --model_path ../pretrained_models/aspirin2benzene --evaluation_file ../datasets/benzene-test.npz --figure_folder ../figures/figure5_lower --L=1 --k=2 --i=1 --N_eval=1`
+`python3 attention-plot.py --model_path ../pretrained_models/aspirin2benzene --evaluation_file ../datasets/benzene-test.npz --figure_folder ../figures/figure5_lower --L=1 --k=2 --i=1 --N_eval=1`
 
 For figure 6.b run 
 
-`python attention-plot.py --model_path ../pretrained_models/cg-cg --evaluation_file ../datasets/cg-cg-test.npz --figure_folder ../figures/figure_6b --L=1 --k=2 --i=1 --N_eval=1`
+`python3 attention-plot.py --model_path ../pretrained_models/cg-cg --evaluation_file ../datasets/cg-cg-test.npz --figure_folder ../figures/figure_6b --L=1 --k=2 --i=1 --N_eval=1`
 
 and for figure 6.c run
 
-`python attention-plot.py --model_path ../pretrained_models/cg-cg --evaluation_file ../datasets/cg-cg-test.npz --figure_folder ../figures/figure_6c --L=2 --k=2 --i=1 --N_eval=1`
+`python3 attention-plot.py --model_path ../pretrained_models/cg-cg --evaluation_file ../datasets/cg-cg-test.npz --figure_folder ../figures/figure_6c --L=2 --k=2 --i=1 --N_eval=1`
 
 ### Using the Shell Scripts
 Executing the commands all by hand is tedious which is why we provide shell scripts to ease the usage. **A word of 
@@ -213,11 +225,11 @@ This can be easily achieved with the python scripts already describes.
 Start by training the model using the default parameters which just corresponds to not passing any addtional 
 flags to the `train.py` script
 
-`python train.py --train_file <file-path> --save_path <directory>`
+`python3 train.py --train_file <file-path> --save_path <directory>`
 
 If we want to transfer our learned model to a different molecule we use the `transfer-learning.py`
 
-`python transfer-training.py --train_file <file-path> --pretrained_path <directory> --save_path <directory>`
+`python3 transfer-training.py --train_file <file-path> --pretrained_path <directory> --save_path <directory>`
 
 The models can be evaluated and attention matrices plotted using the already described scripts `eval.py` and 
 `attention-plot.py`. 

@@ -12,3 +12,4 @@ user_trained_transfer_model/
 figures/
 pretrained_models/
 datasets/
+venv_geometric_attention/
