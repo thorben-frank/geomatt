@@ -26,9 +26,15 @@ To install the package geometric attention and all dependencies which are needed
 ### Getting the Data
 In the paper the MD17 data sets and a DNA data set are used. They can be downloaded [here](https://drive.google.com/drive/folders/1GmyFUGzHfw2OK2fpv_3AH285xpUZk8JA?usp=sharing).
 After unpacking the data please put the folder `datasets` into the `detect-the-interactions-that-matter-in-matter-attention-for-many-body-systems` folder.
+When looking into the datasets folder one sees several .npz files where `<molecule>-train.npz` are the files
+that have been used for training and `<molecule>-test.npz` are the files that have been used for testing. The files 
+`shapes-A.npz` and `shapes-B.npz` contain training and test data that have been used for the small geometric classification 
+experiment in the theory section of the paper.
 ### Pretrained Models
 Pretrained models can be downloaded [here](https://drive.google.com/drive/folders/1w16xzQXfUOt8BaeVFNN8BZi-6jCSnMot?usp=sharing).
 After unpacking the data please put the folder `pretrained_models` into the `detect-the-interactions-that-matter-in-matter-attention-for-many-body-systems` folder.
+The folders are named according to the molecule they have been trained on. The folders
+`<base_molecule>2<target_molecule>` contain the models that have been retrained in context of the transfer learning task.
 ### Sanity Check
 You should now have a folder structure which looks the following
 ![tree](./md-material/sanity-check-folder-structure.png). 
@@ -113,7 +119,22 @@ adjusted paths
 
 `python3 eval.py --model_path ../user_transferred_models/benzene2naphthalene --evaluation_file ../datasets/naphthalene-test.npz --train_file ../datasets/naphthalene-train.npz --N_eval=100`
 ## Results
-Here recap the results and link to the appropriate lines in the MD file.
+Here we recap the performance results of *GeomAtt* on the MD17 benchmark and on the transfer learning task. 
+
+|        | Aspirin | Benzene | Ethanol | Malonaldehyde | Naphthalene | Salicyclic | Toluene | Uracil |
+|--------|---------|---------|---------|:-------------:|-------------|------------|---------|--------|
+| Energy | 0.89    | 0.18    | 0.25    | 0.32          | 0.32        | 0.35       | 0.24    | 0.27   |
+| Forces | 2.03    | 0.41    | 0.98    | 1.31          | 0.81        | 1.17       | 0.80    | 0.99   |
+
+The results on the transfer learning were the following
+
+|        | Aspirin2Benzene | Aspirin2Toluene | Benezene2Naphthalene | Toluene2Benzene |
+|--------|-----------------|-----------------|----------------------|:---------------:|
+| Energy | 0.38            | 0.80            | 1.16                 | 0.21            |
+| Forces | 1.45            | 2.36            | 3.97                 | 0.83            |
+
+The results of both tables can be reproduced by using either the python scripts or the shell script as described in 
+detail in the sections below.
 
 ## Reproduce the Paper Results using Pretrained Models
 After we have seen the general syntax for the python scripts we now proceed to give a guide on reproducing the results 
