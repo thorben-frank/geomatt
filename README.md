@@ -1,4 +1,4 @@
-# detect-the-interactions-that-matter-in-matter-geometric-attention-for-many-body-systems
+# Detect the Interaction that Matter in Matter: Geometric Attention for Many-Body Systems
 
 ## Setup
 Clone the code to your local machine using
@@ -20,12 +20,15 @@ After unpacking the data please put the folder `datasets` into the `detect-the-i
 Pretrained models can be downloaded [here](https://drive.google.com/drive/folders/1w16xzQXfUOt8BaeVFNN8BZi-6jCSnMot?usp=sharing).
 After unpacking the data please put the folder `pretrained_models` into the `detect-the-interactions-that-matter-in-matter-attention-for-many-body-systems` folder.
 ### Sanity Check
-You should now have a folder structure which looks the following:
+You should now have a folder structure which looks the following
+![tree](./md-material/sanity-check-folder-structure.png). 
 
-`show the folder tree`
+For readability we restricted the depth of the tree but each directory in the pretrained model
+directory should look the following:
+![tree2](./md-material/sanity-check-pretrained-folder.png)
 
-This is important such that the shell scripts which are intended to ease 
-reproducability can run properly. If you do not intend to use the shell scripts
+This is important such that the shell scripts which are 
+intended to ease reproducability can run properly. If you do not intend to use the shell scripts
 and plan to save the pretrained models and the data somewhere else you can still run
 the models and evaluate the models using the python scripts in the folder `scripts`. 
 These scripts give you the possibility to set all paths per hand.
@@ -39,7 +42,7 @@ Go into the script folder and run the command
 
 It will display explanation on the parameters that can be passed to the model. To train a *GeomAtt* network for some molecule is given as
 
-`python train.py --train_file <path-to-training-file>/<molecule-name>-train.npz --save_path <model-directory>`
+`python train.py --train_file <file-path> --save_path <directory>`
 
 The parameter which specifies the path to the training file and a directory where the model should be saved are mandatory. When no further 
 parameters are passed to the script it will run with the default parameters which are listed in the table in the main paper
@@ -61,17 +64,17 @@ Type
 for full details on parameters that can be passed to the evaluation script. 
 To validate a trained model on the test data use the command
 
-`python eval.py --model_path <model-directory> --evaluation_file <path-to-test-file>/<molecule-name>-test.npz --train_file <path-to-training-file>/<molecule-name>-train.npz`
+`python eval.py --model_path <directory> --evaluation_file <file-path> --train_file <file-path>`
 
-The parameter `<model-directory>` specifies the location where the model has been saved and the `<path-to-test-file>/<molecule-name>-test.npz` is the location of the file that contrains
-the test points. Additionally, one has to pass the file on which the model has been trained `<path-to-training-file>/<molecule-name>-train.npz` in order to scale the output of the network
+The parameter `--model_path` specifies the location where the model has been saved and the `--evaluation_file` sets the location of the 
+evaluation file. Additionally, one has to pass the file on which the model has been trained to `--train_file` in order to scale the output of the network
 properly. We can use this to evaluate our trained model from above on `N_eval = 100` test points
 
 `python eval.py --model_path ../user_trained_models/geomatt-benzene --evaluation_file ../datasets/benzene-test.npz --train_file ../datasets/benzene-train.npz --N_eval=100`
  
-When passing no argument for `N_eval = 100` all test points are used for evaluation. As this are up to 1M, the parameter
-`N_eval` can be used if one is interested in a rough estimate for the model performance. The script outputs the mean 
-absolute error (MAE) for energy and forces.
+When passing no argument for `N_eval = 100` all test points are used for evaluation. As this are up to 1M per molecule, 
+the parameter `N_eval` can be used if one is interested in a rough estimate for the model performance. The script 
+outputs the mean absolute error (MAE) for energy and forces.
 
 ### Transfer Learning
 Type 
@@ -79,30 +82,33 @@ Type
 `python transfer-learning.py --help`
 
 for full details on parameters that can be passed to the transfer learning script. The transfer learning script handles 
-two things for you. 1) It loads a pretrained model that has been trained on some base molecule. 2) It freezes all
-parameters apart from the last layer and retrains only this parameters to match the training data of the target molecule.  
-To do so run the command
+two things for you. If one runs the command
 
-`python transfer-training.py --train_file <path-to-train-file> --pretrained_path <pretrained-model-path> --save_path <model-path>`
+`python transfer-training.py --train_file <file-path> --pretrained_path <directory> --save_path <directory>`
+
+the `transfer-training.py` script does the following things for you: It loads a pretrained model that has been trained 
+on some base molecule from `--pretrained_path`. It freezes all parameters apart from the last layer and retrains only 
+the free parameters to match the training data of the target molecule which must be specified by `--train_file`. The 
+transferred model is then saved to `--save_path`.
 
 If we want to transfer for example our trained benzene model to naphthalene we can do this by using the command
 
 `python transfer-training.py --train_file ../datasets/naphthalene-train.npz --pretrained_path ../user_trained_models/geomatt-benzene --save_path ../user_transferred_models/benzene2naphthalene --N_epochs=50`  
 
-In order to avoid confusion with the evaluation script we want to remark that the `--train_file` flag from above corresponds
-to the file which is used to retrain the final layers.
+In order to avoid confusion with the evaluation script we want to remark that the `--train_file` flag from above 
+corresponds to the file which is used to retrain the final layers.
 
-We can now evaluate the transferred model by using again the evaluation script in the fashion from before but with adjusted
-set paths
+We can now evaluate the transferred model by using again the evaluation script in the fashion from before but with 
+adjusted paths
 
 `python eval.py --model_path ../user_transferred_models/benzene2naphthalene --evaluation_file ../datasets/naphthalene-test.npz --train_file ../datasets/naphthalene-train.npz --N_eval=100`
 
 ## Reproduce the Paper Results using Pretrained Models
-After we have seen the general syntax for the basis scripts we now proceed to give a guide on reproducing the results from the 
-paper. For that two options are possible:
+After we have seen the general syntax for the python scripts we now proceed to give a guide on reproducing the results 
+from the paper. For that two options are possible:
 
 1) Use the python scripts to evaluate results individually. This corresponds to reproducing step by step each 
-entries in the tables and each figure.
+entry in the tables and each figure.
 2) We additionally provide shell scripts which are intended to ease the use and call the python scripts for you.
 
 ### Using the Python Scripts
@@ -168,8 +174,8 @@ and for figure 6.c run
 
 ### Using the Shell Scripts
 Executing the commands all by hand is tedious which is why we provide shell scripts to ease the usage. **A word of 
-warning:** These shell scripts only work if the relative shell scripts are executed from **within the script folder** and 
-the dateset and pretrained model folder has been saved as described in the setup. 
+warning:** These shell scripts only work if they are executed from **within the script folder** and the dateset and 
+pretrained model folder have been saved as described in the setup. 
 
 #### MD17
 The results for the table which displays performance on the MD17 benchmark can be obtained by executing the shell
@@ -207,11 +213,11 @@ This can be easily achieved with the python scripts already describes.
 Start by training the model using the default parameters which just corresponds to not passing any addtional 
 flags to the `train.py` script
 
-`python train.py --train_file <path-to-training-file> --save_path <model-directory>`
+`python train.py --train_file <file-path> --save_path <directory>`
 
 If we want to transfer our learned model to a different molecule we use the `transfer-learning.py`
 
-`python transfer-training.py --train_file <path-to-other-training-file> --pretrained_path <pretrained-model-path> --save_path <transfer-model-path>`
+`python transfer-training.py --train_file <file-path> --pretrained_path <directory> --save_path <directory>`
 
 The models can be evaluated and attention matrices plotted using the already described scripts `eval.py` and 
 `attention-plot.py`. 
