@@ -96,7 +96,7 @@ ax.set_xlabel("test points")
 ax.set_ylabel("embedding")
 ax.set_xticklabels([])
 ax.set_yticklabels([])
-#ax.set_ylim(-9, 9)
+ax.set_ylim(-9, 9)
 
 Path(figure_folder).mkdir(parents=True, exist_ok=True)
 file_path = os.path.join(figure_folder, file_name)

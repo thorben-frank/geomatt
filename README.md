@@ -24,14 +24,14 @@ To install the package geometric attention and all dependencies which are needed
 
 `pip3 install .`
 ### Getting the Data
-In the paper the MD17 data sets and a DNA data set are used. They can be downloaded [here](https://drive.google.com/drive/folders/1GmyFUGzHfw2OK2fpv_3AH285xpUZk8JA?usp=sharing).
+In the paper the MD17 data sets and a DNA data set are used. They can be downloaded by clicking [here](http://www.quantum-machine.org/data/geomatt/datasets.zip). 
 After unpacking the data please put the folder `datasets` into the `detect-the-interactions-that-matter-in-matter-attention-for-many-body-systems` folder.
 When looking into the datasets folder one sees several .npz files where `<molecule>-train.npz` are the files
 that have been used for training and `<molecule>-test.npz` are the files that have been used for testing. The files 
 `shapes-A.npz` and `shapes-B.npz` contain training and test data that have been used for the small geometric classification 
 experiment in the theory section of the paper.
 ### Pretrained Models
-Pretrained models can be downloaded [here](https://drive.google.com/drive/folders/1w16xzQXfUOt8BaeVFNN8BZi-6jCSnMot?usp=sharing).
+Pretrained models can be downloaded [here](http://www.quantum-machine.org/data/geomatt/pretrained_models.zip).
 After unpacking the data please put the folder `pretrained_models` into the `detect-the-interactions-that-matter-in-matter-attention-for-many-body-systems` folder.
 The folders are named according to the molecule they have been trained on. The folders
 `<base_molecule>2<target_molecule>` contain the models that have been retrained in context of the transfer learning task.
@@ -279,7 +279,7 @@ The general usage of the `geometric-classifiers.py` is the following
 which will perform classification of the shapes stored in `--train_file` with a standard message passing step and plots
 the final embeddings into the `--figure_folder` directory. Running the command
 
-`python3 geometric-classifiers.py --train_file ../datasets/shapes-A.npz --figure_folder ../figures/shapes-A --N_epochs=75`
+`python3 geometric-classifiers.py --train_file ../datasets/shapes-A.npz --figure_folder ../shapes/shapes-A --N_epochs=75`
 
 will perform a geometric classification using the standard aggregation step on the shapes A<sub>1</sub> and 
 A<sub>2</sub> for 75 epochs. As it can be seen on the resulting accuracy as well as on the figure 
