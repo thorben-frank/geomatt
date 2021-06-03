@@ -19,7 +19,7 @@ parser.add_argument('--train_file', type=str, required=True, help='path to the t
 parser.add_argument('--figure_folder', type=str, default="", help='path where the figures will be saved')
 
 # Arguments that determine the model
-parser.add_argument('--mode', type=str, required=True,
+parser.add_argument('--mode', type=str, default="standard",
                     help='Pass the MP step to use: Either standard (default) or geometric_attention')
 
 parser.add_argument('--order', type=int, default=2, help='The order k to use when running in mode geometric_attention')
