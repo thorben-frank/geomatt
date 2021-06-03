@@ -279,7 +279,7 @@ The general usage of the `geometric-classifiers.py` is the following
 which will perform classification of the shapes stored in `--train_file` with a standard message passing step and plots
 the final embeddings into the `--figure_folder` directory. Running the command
 
-`python3 geometric-classifiers.py --train_file ../datasets/shapes-A.npz --figure_folder ../figures/shapes-A --N_eval=75`
+`python3 geometric-classifiers.py --train_file ../datasets/shapes-A.npz --figure_folder ../figures/shapes-A --N_epochs=75`
 
 will perform a geometric classification using the standard aggregation step on the shapes A<sub>1</sub> and 
 A<sub>2</sub> for 75 epochs. As it can be seen on the resulting accuracy as well as on the figure 
@@ -287,7 +287,7 @@ which lies in the directory `../figures/shapes-A` a standard MP step fails to di
 geometric attention operation can be set by appropriately setting the `--mode` where the order is specified by the 
 `--order` flag. Running the command 
 
-`python3 geometric-classifiers.py --train_file ../datasets/shapes-A.npz --figure_folder ../figures/shapes-A --mode geometric_attention --order=3 --N_eval=75`
+`python3 geometric-classifiers.py --train_file ../datasets/shapes-A.npz --figure_folder ../figures/shapes-A --mode geometric_attention --order=3 --N_epochs=75`
 
 will show that the geometric attention operator of order k=3 can distinguish the shapes. This can be seen on the plot
 as well as on the achieved accuracy on the test set which is plotted in the end.
