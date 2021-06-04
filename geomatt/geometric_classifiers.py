@@ -8,7 +8,7 @@ from .stream import Stream
 class Interaction(nn.Module):
     def __init__(self, conv):
         super(Interaction, self).__init__()
-
+        self.dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.conv = conv
 
         F = self.conv.F
@@ -31,7 +31,7 @@ class Interaction(nn.Module):
         W = self.conv(coordinates)
         # K.shape = [B,N_v,N_v,F]
 
-        W = W * (torch.ones(1, N_v, N_v, 1) - torch.eye(N_v).view(1, N_v, N_v, 1))
+        W = W * (torch.ones(1, N_v, N_v, 1).to(self.dev) - torch.eye(N_v).view(1, N_v, N_v, 1).to(self.dev))
         x = torch.einsum("bnmf,bmf->bnf", W, x)
         # x.shape = [B,N_v,F]
 
