@@ -85,7 +85,7 @@ if mode == "standard":
     file_name = "mode-standard.pdf"
 elif mode == "geomatt":
     title = "mode=geomatt and k={}".format(order)
-    file_name = "mode-geometric-attention-k-{}.pdf".format(order)
+    file_name = "mode-geomatt-k-{}.pdf".format(order)
 
 fig, ax = plt.subplots(1,1,figsize=(4.5,9))
 ax.set_title(title)
@@ -96,7 +96,7 @@ ax.set_xlabel("test points")
 ax.set_ylabel("embedding")
 ax.set_xticklabels([])
 ax.set_yticklabels([])
-ax.set_ylim(-9, 9)
+ax.set_ylim((min(embeddings[:])-5, max(embeddings[:])+5))
 
 Path(figure_folder).mkdir(parents=True, exist_ok=True)
 file_path = os.path.join(figure_folder, file_name)
