@@ -3,10 +3,10 @@
 ## Setup
 Clone the code to your local machine using
 
-`git clone https://github.com/thorben-frank/detect-the-interactions-that-matter-in-matter-geometric-attention-for-many-body-systems.git`
+`git clone https://github.com/thorben-frank/geomatt.git`
 
 
-Afterwards change into the directory `detect-the-interactions-that-matter-in-matter-geometric-attention-for-many-body-systems`.
+Afterwards change into the directory `geomatt`.
 
 ### Code
 
@@ -25,14 +25,14 @@ To install the package geometric attention and all dependencies which are needed
 `pip3 install .`
 ### Getting the Data
 In the paper the MD17 data sets and a DNA data set are used. They can be downloaded by clicking [here](http://www.quantum-machine.org/data/geomatt/datasets.zip). 
-After unpacking the data please put the folder `datasets` into the `detect-the-interactions-that-matter-in-matter-attention-for-many-body-systems` folder.
+After unpacking the data please put the folder `datasets` into the `geomatt` folder.
 When looking into the datasets folder one sees several .npz files where `<molecule>-train.npz` are the files
 that have been used for training and `<molecule>-test.npz` are the files that have been used for testing. The files 
 `shapes-A.npz` and `shapes-B.npz` contain training and test data that have been used for the small geometric classification 
 experiment in the theory section of the paper.
 ### Pretrained Models
 Pretrained models can be downloaded [here](http://www.quantum-machine.org/data/geomatt/pretrained_models.zip).
-After unpacking the data please put the folder `pretrained_models` into the `detect-the-interactions-that-matter-in-matter-attention-for-many-body-systems` folder.
+After unpacking the data please put the folder `pretrained_models` into the `geomatt` folder.
 The folders are named according to the molecule they have been trained on. The folders
 `<base_molecule>2<target_molecule>` contain the models that have been retrained in context of the transfer learning task.
 ### Sanity Check
@@ -236,7 +236,7 @@ Run
 
 `source ./attention-figures.sh`
 
-from **within the script folder** which saves the figures into `detect-the-interactions-that-matter-in-matter-attention-for-many-body-systems/figures`.
+from **within the script folder** which saves the figures into `geomatt/figures`.
 
 ## Reproduce the Paper Results in and End2End Fashion
 So far, we have only shown how to observe the paper results using the pretrained models. The same can be done
@@ -279,7 +279,7 @@ The general usage of the `geometric-classifiers.py` is the following
 which will perform classification of the shapes stored in `--train_file` with a standard message passing step and plots
 the final embeddings into the `--figure_folder` directory. Running the command
 
-`python3 geometric-classifiers.py --train_file ../datasets/shapes-A.npz --figure_folder ../shapes/shapes-A --N_epochs=75`
+`python3 geometric-classifiers.py --train_file ../datasets/shapes-A.npz --figure_folder ../figures/shapes-A --N_epochs=75`
 
 will perform a geometric classification using the standard aggregation step on the shapes A<sub>1</sub> and 
 A<sub>2</sub> for 75 epochs. As it can be seen on the resulting accuracy as well as on the figure 
@@ -298,9 +298,7 @@ running the command
 `source ./figure-geometric-classification.sh`
 
 This scripts successively trains the models, outputs the achieved accuracies and saves the 
-embedding plots into the directories 
-`detect-the-interactions-that-matter-in-matter-geometric-attention-for-many-body-systems/shapes/shapes-A` 
-and `detect-the-interactions-that-matter-in-matter-geometric-attention-for-many-body-systems/shapes/shapes-B`, 
+embedding plots into the directories `geomatt/figures/shapes-A` and `geomatt/figures/shapes-B`, 
 respectively.
 
 
