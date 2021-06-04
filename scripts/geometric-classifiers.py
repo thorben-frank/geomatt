@@ -72,7 +72,7 @@ print("Achieved Accuracy: {}".format(test_accuracy))
 
 net = classifier_net.module_
 net.final_embedding = []
-net(torch.tensor(coordinates_test[:100, ...].astype(np.float32)))
+net(torch.tensor(coordinates_test[:100, ...].astype(np.float32)).to(dev))
 embeddings = np.array(net.final_embedding)[0, ...]
 
 c = []
