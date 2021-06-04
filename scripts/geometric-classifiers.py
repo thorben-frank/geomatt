@@ -53,6 +53,7 @@ elif mode == "geomatt":
 else:
     print("Invalid mode {}".format(mode))
 
+dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 classifier_net = NeuralNetBinaryClassifier(module=model,
                                            optimizer=torch.optim.Adam,
                                            optimizer__lr=1e-4,
@@ -60,6 +61,7 @@ classifier_net = NeuralNetBinaryClassifier(module=model,
                                            iterator_train__batch_size=4,
                                            iterator_valid__batch_size=4,
                                            iterator_train__shuffle=True,
+                                           device=dev
                                            )
 
 ### fit the model ###
