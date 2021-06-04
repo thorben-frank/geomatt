@@ -1,5 +1,3 @@
-from abc import ABC
-
 import numpy as np
 import torch
 from torch import nn
@@ -7,7 +5,7 @@ from .utils import adjacency, SSP
 from .stream import Stream
 
 
-class Interaction(nn.Module, ABC):
+class Interaction(nn.Module):
     def __init__(self, conv):
         super(Interaction, self).__init__()
 
@@ -46,7 +44,7 @@ class Interaction(nn.Module, ABC):
         return atom_emb_
 
 
-class CfConv(nn.Module, ABC):
+class CfConv(nn.Module):
     def __init__(self, F=16, d_min=0, d_max=2, interval=0.1, gamma=10):
         super(CfConv, self).__init__()
         dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -89,7 +87,7 @@ class CfConv(nn.Module, ABC):
         return x
 
 
-class SchNetClassifier(nn.Module, ABC):
+class SchNetClassifier(nn.Module):
     def __init__(self, atom_types, order=None):
         # atom_types.shape = [N_v]
         super(SchNetClassifier, self).__init__()
@@ -132,7 +130,7 @@ class SchNetClassifier(nn.Module, ABC):
         return v_
 
 
-class GeometricAttentionClassifier(nn.Module, ABC):
+class GeometricAttentionClassifier(nn.Module):
     def __init__(self, atom_types, order):
         super(GeometricAttentionClassifier, self).__init__()
 

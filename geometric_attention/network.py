@@ -1,5 +1,3 @@
-from abc import ABC
-
 import numpy as np
 
 import torch
@@ -8,7 +6,7 @@ from torch import nn
 from .utils import EnergyExtractor, composite_function, adjacency
 
 
-class EnergyPredictor(nn.Module, ABC):
+class EnergyPredictor(nn.Module):
     def __init__(self, geometric_attention_network, F, atom_types, linear=False, with_forces=False):
         # atom_types.shape = [N_v]
         super(EnergyPredictor, self).__init__()
@@ -92,7 +90,7 @@ class EnergyPredictor(nn.Module, ABC):
         return energy, forces
 
 
-class GeometricAttentionNetwork(nn.Module, ABC):
+class GeometricAttentionNetwork(nn.Module):
     def __init__(self, streams, atom_types=None, training=True):
         super(GeometricAttentionNetwork, self).__init__()
 

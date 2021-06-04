@@ -1,5 +1,3 @@
-from abc import ABC
-
 import torch
 from torch import nn
 from .utils import SSP
@@ -19,7 +17,7 @@ def request_correlator(k, F, D, interval, shared=False, bias=True):
         raise (NotImplementedError("Order k = {} is not implemented".format(k)))
 
 
-class Stream(nn.Module, ABC):
+class Stream(nn.Module):
     def __init__(self, order, N_L=1, F=16, F_v=16, d_min=0., d_max=5., interval=.1, gamma=.5, shared=False, bias=True, correlators=None, mode="training"):
         super(Stream, self).__init__()
 
@@ -72,7 +70,7 @@ class Stream(nn.Module, ABC):
         return v_l[-1]
 
 
-class Interaction(nn.Module, ABC):
+class Interaction(nn.Module):
     def __init__(self, correlator, F_vertex):
         super(Interaction, self).__init__()
 

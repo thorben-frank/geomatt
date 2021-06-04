@@ -1,10 +1,8 @@
-from abc import ABC, abstractmethod
-
 import torch
 from torch import nn
 
 
-class CorrelatorK2(nn.Module, ABC):
+class CorrelatorK2(nn.Module):
     def __init__(self, F, D, interval, shared=False, bias=True):
         super(CorrelatorK2, self).__init__()
 
@@ -25,7 +23,7 @@ class CorrelatorK2(nn.Module, ABC):
         return C
 
 
-class CorrelatorK3(nn.Module, ABC):
+class CorrelatorK3(nn.Module):
     def __init__(self, F, D, interval, shared=False, bias=True):
         super(CorrelatorK3, self).__init__()
 
@@ -73,7 +71,7 @@ class CorrelatorK3(nn.Module, ABC):
             return self.forward_not_shared(rbf_0=rbf_0, rbf_d=rbf_d)
 
 
-class CorrelatorK4(nn.Module, ABC):
+class CorrelatorK4(nn.Module):
     def __init__(self, F, D, interval, shared=False, bias=True):
         super(CorrelatorK4, self).__init__()
 
@@ -128,7 +126,7 @@ class CorrelatorK4(nn.Module, ABC):
             return self.forward_not_shared(rbf_0=rbf_0, rbf_d=rbf_d)
 
 
-class CorrelatorK5(nn.Module, ABC):
+class CorrelatorK5(nn.Module):
     def __init__(self, F, D, interval, shared=False, bias=True):
         super(CorrelatorK5, self).__init__()
 
