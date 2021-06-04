@@ -56,12 +56,12 @@ Go into the script folder and run the command
 
 `python3 train.py --help`
 
-It will display explanation on the parameters that can be passed to the model. To train a *GeomAtt* network for some molecule is given as
+It will display explanation on the parameters that can be passed to the model. To train a *GeomAtt* network the general command is
 
 `python3 train.py --train_file <file-path> --save_path <directory>`
 
 The parameter which specifies the path to the training file and a directory where the model should be saved are mandatory. When no further 
-parameters are passed to the script it will run with the default parameters which are listed in the table in the main paper
+parameters are passed to the script it will run with the default parameters which are listed in the table 3 (appendix) in the main paper
 in the appendix. For example training a *GeomAtt* network for `N_epochs=50` epochs on benzene with default parameters, correlation orders `k=2` and `k=3` 
 and inner product space dimension `Fi = 64` can be achieved by the command
 
