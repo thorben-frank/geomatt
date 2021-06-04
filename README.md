@@ -15,8 +15,9 @@ Lets start by setting up a new virtual environment. Therefore, type
 
 `python3 -m venv venv_geometric_attention`
 
-which will setup a new virtual environment with the name `venv_geometric_attention`. Next activate the 
-virtual environment by using the command 
+which will setup a new virtual environment with the name `venv_geometric_attention`. Here we want to note that the command for 
+creating a virtual environment can vary from machine to machine so a little care has to be taken when using this command. 
+When this command is not working just create a virtual environment as you are used to. Next activate the virtual environment by using the command 
 
 `source venv_geometric_attention/bin/activate`
 
