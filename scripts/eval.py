@@ -1,8 +1,8 @@
 import argparse
-from geometric_attention.stream import Stream
-from geometric_attention.network import GeometricAttentionNetwork, EnergyPredictor
-from geometric_attention.utils import set_seeds, get_train_test_data, read_json_file
-from geometric_attention.skorch_extensions import FNeuralNet
+from geomatt.stream import Stream
+from geomatt.network import GeometricAttentionNetwork, EnergyPredictor
+from geomatt.utils import set_seeds, get_train_test_data, read_json_file
+from geomatt.skorch_extensions import FNeuralNet
 import numpy as np
 import os
 from sklearn.preprocessing import StandardScaler

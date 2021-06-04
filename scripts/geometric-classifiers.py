@@ -3,8 +3,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from skorch import NeuralNetBinaryClassifier
 import torch
-from geometric_attention.geometric_classifiers import SchNetClassifier, GeometricAttentionClassifier
-from geometric_attention.utils import set_seeds
+from geomatt.geometric_classifiers import SchNetClassifier, GeometricAttentionClassifier
+from geomatt.utils import set_seeds
 from pathlib import Path
 import os
 
@@ -20,9 +20,9 @@ parser.add_argument('--figure_folder', type=str, default="", help='path where th
 
 # Arguments that determine the model
 parser.add_argument('--mode', type=str, default="standard",
-                    help='Pass the MP step to use: Either standard (default) or geometric_attention')
+                    help='Pass the MP step to use: Either standard (default) or geomatt')
 
-parser.add_argument('--order', type=int, default=2, help='The order k to use when running in mode geometric_attention')
+parser.add_argument('--order', type=int, default=2, help='The order k to use when running in mode geomatt')
 parser.add_argument('--N_epochs', type=int, default=250, help='Number of training epochs (default=250)')
 
 args = parser.parse_args()
@@ -48,7 +48,7 @@ N_atoms = coordinates_train.shape[1]
 
 if mode == "standard":
     model = SchNetClassifier(atom_types=np.ones(N_atoms))
-elif mode == "geometric_attention":
+elif mode == "geomatt":
     model = GeometricAttentionClassifier(atom_types=np.ones(N_atoms), order=order)
 else:
     print("Invalid mode {}".format(mode))
@@ -83,8 +83,8 @@ for e in y_test[:100, ...]:
 if mode == "standard":
     title = "mode=standard"
     file_name = "mode-standard.pdf"
-elif mode == "geometric_attention":
-    title = "mode=geometric_attention and k={}".format(order)
+elif mode == "geomatt":
+    title = "mode=geomatt and k={}".format(order)
     file_name = "mode-geometric-attention-k-{}.pdf".format(order)
 
 fig, ax = plt.subplots(1,1,figsize=(4.5,9))

@@ -1,9 +1,9 @@
 from setuptools import setup
 
 setup(
-    name='geometric_attention',
+    name='geomatt',
     version='0.2',
     description='geometric attention',
-    packages=['geometric_attention'],  # same as name
+    packages=['geomatt'],  # same as name
     install_requires=['torch', 'torchvision', 'numpy', 'sklearn', 'skorch', 'scipy', 'matplotlib'],# external packages as dependencies
 )
