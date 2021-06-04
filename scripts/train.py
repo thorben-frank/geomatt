@@ -9,6 +9,8 @@ import os
 from pathlib import Path
 from sklearn.preprocessing import StandardScaler
 from skorch.callbacks import Checkpoint
+from skorch.callbacks import LRScheduler
+
 import torch
 
 # Create the parser
@@ -95,6 +97,7 @@ GeomAtt = GeometricAttentionNetwork(streams=streams, atom_types=None)
 # saves the model parameters which gave smallest validation error
 cp = Checkpoint(dirname=checkpoint_path)
 
+lrs = LRScheduler(policy="StepLR", step_every="epoch", step_size=1000, gamma=.96, event_name="step_lr")
 dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 net = FNeuralNet(module=EnergyPredictor,
                  module__geometric_attention_network=GeomAtt,
@@ -109,7 +112,7 @@ net = FNeuralNet(module=EnergyPredictor,
                  iterator_train__batch_size=batch_size,
                  iterator_valid__batch_size=batch_size,
                  iterator_train__shuffle=True,
-                 callbacks=[cp],
+                 callbacks=[cp, lrs],
                  device=dev,
                  )
 
