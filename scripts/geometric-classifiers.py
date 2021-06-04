@@ -40,20 +40,20 @@ coordinates_test = data["R_test"]
 y_train = data["y_train"].astype(np.float32)
 y_test = data["y_test"].astype(np.float32)
 
-
+dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 X_dict_train = {'coordinates': coordinates_train.astype(np.float32)}
 X_dict_test = {'coordinates': coordinates_test.astype(np.float32)}
 
 N_atoms = coordinates_train.shape[1]
 
 if mode == "standard":
-    model = SchNetClassifier(atom_types=np.ones(N_atoms))
+    model = SchNetClassifier(atom_types=np.ones(N_atoms)).to(dev)
 elif mode == "geomatt":
-    model = GeometricAttentionClassifier(atom_types=np.ones(N_atoms), order=order)
+    model = GeometricAttentionClassifier(atom_types=np.ones(N_atoms), order=order).to(dev)
 else:
     print("Invalid mode {}".format(mode))
 
-dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 classifier_net = NeuralNetBinaryClassifier(module=model,
                                            optimizer=torch.optim.Adam,
                                            optimizer__lr=1e-4,
